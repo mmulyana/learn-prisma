@@ -1,11 +1,14 @@
 import axios from 'axios'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 export default function Home() {
-  const [news, setNews] = useState([])
+  const [news, setNews] = useState(null)
 
   async function getNews() {
-    const res = await axios('/api/news')
+    const res = await axios.get('/api/news')
     setNews(res.data)
   }
   useEffect(() => {
@@ -13,20 +16,32 @@ export default function Home() {
   }, [])
 
   return (
-    <div className='pb-12'>
-      <h1 className='mt-4 text-center'>React News</h1>
-      <div className='mt-6 max-w-[400px] mx-auto grid grid-cols-1 gap-y-5'>
-        {news.map((data) => (
-          <div className='w-full h-fit bg-white'>
-            <img
-              src={data.image}
-              className='w-full h-56 rounded object-cover object-center'
-            />
-            <div className='p-2'>
-              <p className='mt-2'>{data.title}</p>
+    <div className='pb-12 max-w-[400px] mx-auto'>
+      <div className='flex justify-between items-center mt-4'>
+        <h1 className='text-center'>React News</h1>
+        <Link href='/create' className='btn-link'>
+          Create
+        </Link>
+      </div>
+      <div className='mt-6 grid grid-cols-1 gap-y-5'>
+        {news ? (
+          news.map((data, index) => (
+            <div className='w-full h-fit bg-white' key={index}>
+              <img
+                src={data.image}
+                className='w-full h-56 rounded object-cover object-center'
+              />
+              <div className='p-2'>
+                <p className='mt-2'>{data.title}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <>
+            <Skeleton style={{ height: '224px', borderRadius: '4px' }} />
+            <Skeleton style={{ marginTop: '8px', height: '1.5rem' }} />
+          </>
+        )}
       </div>
     </div>
   )
